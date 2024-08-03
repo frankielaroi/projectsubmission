@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Project = require('../models/Project');
+const Project = require('../models/project');
 const verifyToken = require('../services/verifyUser');
 const upload = require('../config/multer'); // Adjust the path as necessary
 const bucket = require('../config/firebase'); // Adjust the path as necessary
