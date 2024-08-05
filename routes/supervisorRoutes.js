@@ -68,9 +68,9 @@ router.get('/', verifyToken, async (req, res) => {
 });
 
 // Get a specific supervisor by ID
-router.get('/:id', verifyToken, async (req, res) => {
+router.get('/single/', verifyToken, async (req, res) => {
     try {
-        const supervisor = await Supervisor.findById(req.params.id);
+        const supervisor = await Supervisor.findById(req.user.userID);
         if (!supervisor) {
             return res.status(404).json({ error: 'Supervisor not found' });
         }
