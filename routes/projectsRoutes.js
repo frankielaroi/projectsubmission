@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../models/project');
+const Supervisor = require('../models/supervisor');
+const User = require('../models/user')
 const verifyToken = require('../services/verifyUser');
 const upload = require('../config/multer'); // Adjust the path as necessary
 const bucket = require('../config/firebase'); // Adjust the path as necessary
@@ -41,6 +43,9 @@ router.post('/', verifyToken, upload.single('file'), async (req, res) => {
                 });
 
                 await newProject.save();
+                await User.findByIdAndUpdate(req.user.userID, { $push: { projects: newProject._id } });
+                await Supervisor.findByIdAndUpdate(supervisorId, { $push: { projects: newProject._id } });
+
                 res.status(201).json(newProject);
             });
 
@@ -57,6 +62,9 @@ router.post('/', verifyToken, upload.single('file'), async (req, res) => {
             });
 
             await newProject.save();
+            await User.findByIdAndUpdate(req.user.userID, { $push: { projects: newProject._id } });
+            await Supervisor.findByIdAndUpdate(supervisorId, { $push: { projects: newProject._id } });
+
             res.status(201).json(newProject);
         }
     } catch (error) {
@@ -67,7 +75,7 @@ router.post('/', verifyToken, upload.single('file'), async (req, res) => {
         console.error('Error creating project:', error);
         res.status(500).json({ error: 'Failed to create project', details: error.message });
     }
-});
+})
 
 // Update project by student
 router.put('/:id', verifyToken, upload.single('file'), async (req, res) => {
