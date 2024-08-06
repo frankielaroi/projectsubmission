@@ -217,5 +217,20 @@ router.put('/:projectId/status', verifyToken, async (req, res) => {
     }
 });
 
+// Get project by id
+router.get('/:id', verifyToken, async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+
+        res.status(200).json(project);
+    } catch (error) {
+        console.error('Error fetching project:', error);
+        res.status(500).json({ error: 'Failed to fetch project', details: error.message });
+    }
+});
 
 module.exports = router;
