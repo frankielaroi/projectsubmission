@@ -187,14 +187,35 @@ router.get('/user', verifyToken, async (req, res) => {
 });
 
 // Get projects by supervisor
-router.get('/supervisor/', verifyToken, async (req, res) => {
+router.get('/supervisor', verifyToken, async (req, res) => {
     try {
-        const projects = await Project.find({ supervisor: req.user.userID });
+        const supervisorId = req.user.userID;
+        const projects = await Project.find({ supervisor: supervisorId }).populate('student');
         res.status(200).json(projects);
     } catch (error) {
-        console.error('Error fetching supervisor projects:', error);
-        res.status(500).json({ error: 'Failed to fetch supervisor projects', details: error.message });
+        console.error('Error fetching projects:', error);
+        res.status(500).json({ error: 'Failed to fetch projects', details: error.message });
     }
 });
+// routes/project.js
+
+router.put('/:projectId/status', verifyToken, async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        const { status } = req.body;
+
+        const project = await Project.findByIdAndUpdate(projectId, { status }, { new: true });
+
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+
+        res.status(200).json(project);
+    } catch (error) {
+        console.error('Error updating project status:', error);
+        res.status(500).json({ error: 'Failed to update project status', details: error.message });
+    }
+});
+
 
 module.exports = router;
