@@ -10,12 +10,15 @@ const bucket = require('../config/firebase'); // Adjust the path as necessary
 // Create a new project submission with file upload
 router.post('/', verifyToken, upload.single('file'), async (req, res) => {
     try {
-        const { title, description, tags, deadline, supervisorId } = req.body;
+        const { title, description, tags, supervisorId } = req.body;
         let fileUrl = null;
 
-        if (!description || !deadline || !supervisorId) {
-            return res.status(400).json({ error: 'Description, deadline, and supervisor are required fields' });
+        if (!description || !supervisorId) {
+            return res.status(400).json({ error: 'Description and supervisor are required fields' });
         }
+
+        const deadline = new Date();
+        deadline.setDate(deadline.getDate() + 30);
 
         if (req.file) {
             const blob = bucket.file(Date.now() + '-' + req.file.originalname);
