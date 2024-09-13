@@ -3,6 +3,11 @@
 const mongoose = require('mongoose');
 
 const SupervisorSchema = new mongoose.Schema({
+    supervisorId: {
+        type: String,
+        required: true,
+        unique: true
+    },
     fullName: {
         type: String,
         required: true

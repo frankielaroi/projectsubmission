@@ -18,20 +18,29 @@ router.post('/', async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Generate a unique supervisorId
+        id = Date.now().toString();
+        supervisorId = await bcrypt.hash(id,1)
+
         // Create the supervisor
         const newSupervisor = new Supervisor({
             fullName,
             email,
             contactNumber,
             department,
-            password: hashedPassword
+            password: hashedPassword,
+            supervisorId
         });
 
         await newSupervisor.save();
         res.status(201).json("User Created");
     } catch (error) {
         console.error('Error creating supervisor:', error);
-        res.status(500).json({ error: 'Failed to create supervisor' });
+        if (error.code === 11000) {
+            res.status(400).json({ error: 'Supervisor with this ID already exists' });
+        } else {
+            res.status(500).json({ error: 'Failed to create supervisor' });
+        }
     }
 });
 router.post('/login', async (req, res) => {
